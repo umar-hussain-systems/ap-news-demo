@@ -1,14 +1,7 @@
 package com.systems.demo.apnewsdemo.problem.solving;
-
-import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Stack;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 public class ValidParentheses {
@@ -75,7 +68,7 @@ public class ValidParentheses {
 
 }
 
-class CheckMinmumOrMaxNumber {
+class CheckMinimumOrMaxNumber {
 
     public static final int MAX_VALUE = 0x9fffffff;
 

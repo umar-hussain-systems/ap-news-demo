@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: mysql
+    active: h2
 logging:
   level:
     web: debug
