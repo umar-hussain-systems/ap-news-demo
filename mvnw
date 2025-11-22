@@ -23,7 +23,7 @@
 #
 # Required ENV vars:
 # ------------------
-#   JAVA_19 - location of a JDK home dir
+#   JAVA_21 - location of a JDK home dir
 #
 # Optional ENV vars
 # -----------------
@@ -57,39 +57,39 @@ case "$(uname)" in
   CYGWIN*) cygwin=true ;;
   MINGW*) mingw=true;;
   Darwin*) darwin=true
-    # Use /usr/libexec/JAVA_19 if available, otherwise fall back to /Library/Java/Home
+    # Use /usr/libexec/JAVA_21 if available, otherwise fall back to /Library/Java/Home
     # See https://developer.apple.com/library/mac/qa/qa1170/_index.html
-    if [ -z "$JAVA_19" ]; then
-      if [ -x "/usr/libexec/JAVA_19" ]; then
-        JAVA_19="$(/usr/libexec/JAVA_19)"; export JAVA_19
+    if [ -z "$JAVA_21" ]; then
+      if [ -x "/usr/libexec/JAVA_21" ]; then
+        JAVA_21="$(/usr/libexec/JAVA_21)"; export JAVA_21
       else
-        JAVA_19="/Library/Java/Home"; export JAVA_19
+        JAVA_21="/Library/Java/Home"; export JAVA_21
       fi
     fi
     ;;
 esac
 
-if [ -z "$JAVA_19" ] ; then
+if [ -z "$JAVA_21" ] ; then
   if [ -r /etc/gentoo-release ] ; then
-    JAVA_19=$(java-config --jre-home)
+    JAVA_21=$(java-config --jre-home)
   fi
 fi
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
 if $cygwin ; then
-  [ -n "$JAVA_19" ] &&
-    JAVA_19=$(cygpath --unix "$JAVA_19")
+  [ -n "$JAVA_21" ] &&
+    JAVA_21=$(cygpath --unix "$JAVA_21")
   [ -n "$CLASSPATH" ] &&
     CLASSPATH=$(cygpath --path --unix "$CLASSPATH")
 fi
 
 # For Mingw, ensure paths are in UNIX format before anything is touched
 if $mingw ; then
-  [ -n "$JAVA_19" ] && [ -d "$JAVA_19" ] &&
-    JAVA_19="$(cd "$JAVA_19" || (echo "cannot cd into $JAVA_19."; exit 1); pwd)"
+  [ -n "$JAVA_21" ] && [ -d "$JAVA_21" ] &&
+    JAVA_21="$(cd "$JAVA_21" || (echo "cannot cd into $JAVA_21."; exit 1); pwd)"
 fi
 
-if [ -z "$JAVA_19" ]; then
+if [ -z "$JAVA_21" ]; then
   javaExecutable="$(which javac)"
   if [ -n "$javaExecutable" ] && ! [ "$(expr "\"$javaExecutable\"" : '\([^ ]*\)')" = "no" ]; then
     # readlink(1) is not available as standard on Solaris 10.
@@ -103,19 +103,19 @@ if [ -z "$JAVA_19" ]; then
       fi
       javaHome="$(dirname "\"$javaExecutable\"")"
       javaHome=$(expr "$javaHome" : '\(.*\)/bin')
-      JAVA_19="$javaHome"
-      export JAVA_19
+      JAVA_21="$javaHome"
+      export JAVA_21
     fi
   fi
 fi
 
 if [ -z "$JAVACMD" ] ; then
-  if [ -n "$JAVA_19"  ] ; then
-    if [ -x "$JAVA_19/jre/sh/java" ] ; then
+  if [ -n "$JAVA_21"  ] ; then
+    if [ -x "$JAVA_21/jre/sh/java" ] ; then
       # IBM's JDK on AIX uses strange locations for the executables
-      JAVACMD="$JAVA_19/jre/sh/java"
+      JAVACMD="$JAVA_21/jre/sh/java"
     else
-      JAVACMD="$JAVA_19/bin/java"
+      JAVACMD="$JAVA_21/bin/java"
     fi
   else
     JAVACMD="$(\unset -f command 2>/dev/null; \command -v java)"
@@ -123,13 +123,13 @@ if [ -z "$JAVACMD" ] ; then
 fi
 
 if [ ! -x "$JAVACMD" ] ; then
-  echo "Error: JAVA_19 is not defined correctly." >&2
+  echo "Error: JAVA_21 is not defined correctly." >&2
   echo "  We cannot execute $JAVACMD" >&2
   exit 1
 fi
 
-if [ -z "$JAVA_19" ] ; then
-  echo "Warning: JAVA_19 environment variable is not set."
+if [ -z "$JAVA_21" ] ; then
+  echo "Warning: JAVA_21 environment variable is not set."
 fi
 
 # traverses directory structure from process work directory to filesystem root
@@ -238,11 +238,11 @@ else
         if [ -e "$javaSource" ]; then
             if [ ! -e "$javaClass" ]; then
                 log " - Compiling MavenWrapperDownloader.java ..."
-                ("$JAVA_19/bin/javac" "$javaSource")
+                ("$JAVA_21/bin/javac" "$javaSource")
             fi
             if [ -e "$javaClass" ]; then
                 log " - Running MavenWrapperDownloader.java ..."
-                ("$JAVA_19/bin/java" -cp .mvn/wrapper MavenWrapperDownloader "$wrapperUrl" "$wrapperJarPath") || rm -f "$wrapperJarPath"
+                ("$JAVA_21/bin/java" -cp .mvn/wrapper MavenWrapperDownloader "$wrapperUrl" "$wrapperJarPath") || rm -f "$wrapperJarPath"
             fi
         fi
     fi
@@ -284,8 +284,8 @@ MAVEN_OPTS="$(concat_lines "$MAVEN_PROJECTBASEDIR/.mvn/jvm.config") $MAVEN_OPTS"
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
-  [ -n "$JAVA_19" ] &&
-    JAVA_19=$(cygpath --path --windows "$JAVA_19")
+  [ -n "$JAVA_21" ] &&
+    JAVA_21=$(cygpath --path --windows "$JAVA_21")
   [ -n "$CLASSPATH" ] &&
     CLASSPATH=$(cygpath --path --windows "$CLASSPATH")
   [ -n "$MAVEN_PROJECTBASEDIR" ] &&

@@ -2,6 +2,7 @@ package com.systems.demo.apnewsdemo.dto.request;
 
 import com.systems.demo.apnewsdemo.model.Gender;
 import jakarta.validation.constraints.Email;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;

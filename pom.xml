@@ -14,7 +14,7 @@
     <name>ap-news-demo</name>
     <description>ap-news-demo</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <kotlin.version>1.9.0</kotlin.version>
     </properties>
     <dependencies>
@@ -39,8 +39,6 @@
             <artifactId>h2</artifactId>
             <version>2.3.232</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>

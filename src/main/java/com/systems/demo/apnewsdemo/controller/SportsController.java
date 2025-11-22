@@ -1,6 +1,7 @@
 package com.systems.demo.apnewsdemo.controller;
 
 import com.systems.demo.apnewsdemo.dto.request.CreateSportsDto;
+import com.systems.demo.apnewsdemo.dto.request.DocumentDto;
 import com.systems.demo.apnewsdemo.dto.response.SportsDto;
 import com.systems.demo.apnewsdemo.service.SportsService;
 import jakarta.validation.Valid;
@@ -10,14 +11,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /** The type Sports controller. */
 @RestController
 @RequestMapping("/api/sports")
 @RequiredArgsConstructor
+@Slf4j
 public class SportsController {
 
   private final SportsService sportsService;
@@ -26,7 +31,7 @@ public class SportsController {
    * Gets sport with multiple players.
    *
    * @param playerCount the player count
-   * @return the sport with multiple players
+   * @return the sport with multiple playersMED
    */
   @GetMapping("/multiple-players/{playerCount}")
   public ResponseEntity<List<SportsDto>> getSportWithMultiplePlayers(
@@ -94,5 +99,14 @@ public class SportsController {
   public ResponseEntity<String> deleteSport(@PathVariable(name = "id") Integer id) {
     sportsService.deleteSports(id);
     return new ResponseEntity<>("", HttpStatus.NO_CONTENT);
+  }
+
+  @PostMapping(value = "/upload/",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_OCTET_STREAM_VALUE})
+  public ResponseEntity<String>uploadFile(@RequestParam("files")MultipartFile file, @RequestPart("details") List<DocumentDto> documentDto) {
+    log.info("file content type {}", file.getContentType());
+    log.info("document Id {}",documentDto.get(0).getDocumentId());
+    log.info("file name {}", file.getName());
+    String sdf = "///";
+    return new ResponseEntity<>(file.getName(), HttpStatus.OK);
   }
 }
