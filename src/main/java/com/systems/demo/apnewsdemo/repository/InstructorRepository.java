@@ -27,3 +27,4 @@ public interface InstructorRepository extends JpaRepository<Instructor, Integer>
   List<Student> findAllStudentsByInstructorId(@Param("instructorId") Integer instructorId);
 }
 
+

@@ -13,9 +13,9 @@ public class Queue<T> {
 
     public void insertLast(T t) {
         if (rootNode == null) {
-            rootNode = new QueueNode<>(new QueueNode.Data<>(t), null, tailNode);
-        } else if (tailNode == null) {
-            tailNode = new QueueNode<>(new QueueNode.Data<>(t), rootNode, null);
+            QueueNode<T> node = new QueueNode<>(new QueueNode.Data<>(t), null, null);
+            rootNode = node;
+            tailNode = node;
         } else {
             QueueNode<T> node = new QueueNode<>(new QueueNode.Data<>(t), tailNode, null);
             tailNode.next = node;
@@ -26,62 +26,99 @@ public class Queue<T> {
 
     public void insertFirst(T t) {
         if (rootNode == null) {
-            rootNode = new QueueNode<>(new QueueNode.Data<>(t), null, tailNode);
-        } else if (tailNode == null) {
-            QueueNode<T> queueNode = new QueueNode<>(new QueueNode.Data<>(t), null, rootNode);
-            tailNode = rootNode;
-            tailNode.previous = queueNode;
-            tailNode.next = null;
-            rootNode = queueNode;
+            QueueNode<T> node = new QueueNode<>(new QueueNode.Data<>(t), null, null);
+            rootNode = node;
+            tailNode = node;
         } else {
-            QueueNode<T> queueNode = new QueueNode<>(new QueueNode.Data<>(t), null, rootNode);
-            rootNode.previous = queueNode;
-            rootNode = queueNode;
+            QueueNode<T> node = new QueueNode<>(new QueueNode.Data<>(t), null, rootNode);
+            rootNode.previous = node;
+            rootNode = node;
         }
         size++;
     }
 
     public T removeLast() {
-        T value = null;
-
         if (tailNode == null) {
-            return value;
-        } else if (tailNode.previous == rootNode) {
-            value = tailNode.getData().getValue();
-            tailNode = null;
-            rootNode = null;
-            size--;
-        } else {
-            value = tailNode.getData().getValue();
-            tailNode = tailNode.previous;
-            size--;
+            return null;
         }
+
+        T value = tailNode.getData().getValue();
+
+        if (tailNode == rootNode) {
+            // only one element
+            rootNode = null;
+            tailNode = null;
+        } else {
+            tailNode = tailNode.previous;
+            if (tailNode != null) {
+                tailNode.next = null;
+            }
+        }
+        size--;
         return value;
     }
 
     public T removeFirst() {
-        T value = null;
-
         if (rootNode == null) {
-            return value;
-        } else if (rootNode.next == tailNode) {
-            value = rootNode.getData().getValue();
-            tailNode = null;
-            rootNode = null;
-            size--;
-        } else {
-            value = rootNode.getData().getValue();
-            rootNode = tailNode.next;
-            size--;
+            return null;
         }
+
+        T value = rootNode.getData().getValue();
+
+        if (rootNode == tailNode) {
+            // only one element
+            rootNode = null;
+            tailNode = null;
+        } else {
+            rootNode = rootNode.next;
+            if (rootNode != null) {
+                rootNode.previous = null;
+            }
+        }
+        size--;
         return value;
     }
 
     public T removeNode(QueueNode<T> node) {
-        if(node.previous != null && node.next != null) {
+        if (node == null) return null;
 
+        if (node == rootNode) {
+            return removeFirst();
         }
-        return null;
+        if (node == tailNode) {
+            return removeLast();
+        }
+
+        // node is in middle
+        QueueNode<T> prev = node.previous;
+        QueueNode<T> next = node.next;
+        if (prev != null) prev.next = next;
+        if (next != null) next.previous = prev;
+        size--;
+        return node.getData().getValue();
+    }
+
+    // Move an existing node to the front (root) without creating a new node.
+    public void moveToFront(QueueNode<T> node) {
+        if (node == null || node == rootNode) return;
+
+        // Detach node
+        if (node == tailNode) {
+            tailNode = node.previous;
+            if (tailNode != null) tailNode.next = null;
+        } else {
+            if (node.previous != null) node.previous.next = node.next;
+            if (node.next != null) node.next.previous = node.previous;
+        }
+
+        // Insert at front
+        node.previous = null;
+        node.next = rootNode;
+        if (rootNode != null) rootNode.previous = node;
+        rootNode = node;
+
+        // If list was empty before (shouldn't happen) ensure tailNode set
+        if (tailNode == null) tailNode = node;
     }
 
     public void emptyQueue() {
@@ -91,4 +128,3 @@ public class Queue<T> {
     }
 
 }
-

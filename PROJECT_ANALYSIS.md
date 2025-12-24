@@ -103,24 +103,23 @@ This is a **Spring Boot 3.2.0** application built with **Java 21** that serves a
   - Stack
   - Priority Queue
 - **Node-based**:
-  - Queue (with QueueNode)
-  - LRU Cache (implementation appears incomplete)
+  - Queue (with `QueueNode`)
+  - LRU Cache (node-based, now implemented as a key->value LRU)
 - **Cache**:
   - CacheVal (for cache value storage)
 
+Notes on LRU Cache (updated)
+- The LRU cache was updated to a key->value implementation that uses the existing `Queue`/`QueueNode` without changing those classes' public shapes.
+- New helper class: `KeyValue<K,V>` (stored inside `QueueNode.Data.value`).
+- Map now indexes keys to `QueueNode<KeyValue<K,V>>` for O(1) lookup and eviction.
+- Main files involved:
+  - `src/main/java/com/systems/demo/apnewsdemo/datastructures/nodebased/KeyValue.java` (new)
+  - `src/main/java/com/systems/demo/apnewsdemo/datastructures/nodebased/LRUCache.java` (converted to `LRUCache<K,V>`)
+  - `src/main/java/com/systems/demo/apnewsdemo/datastructures/nodebased/Queue.java` and `QueueNode.java` (unchanged API, used as-is)
+- Unit tests updated/added: `src/test/java/com/systems/demo/apnewsdemo/datastructures/nodebased/LRUCacheTest.java` (tests for put/get/eviction/remove)
+
 #### 3. Problem Solving (`com.systems.demo.apnewsdemo.problem.solving`)
-Multiple coding problem solutions:
-- `AddingKElementsToLast` - Array manipulation
-- `DecimalStringValueCheck` - String validation
-- `LinkedList` - Custom linked list implementation
-- `LocationsAndTags` - Data processing
-- `ModulusTest` - Mathematical operations
-- `NumberReversal` - Number manipulation
-- `RemovingAlplabetsFromString` - Regex operations
-- `SwappingZerosToLeft` - Array rearrangement
-- `TwoPairSum` - Algorithm problem
-- `ValidParentheses` - Stack-based validation
-- `ZeroOneSort` - Array sorting
+Multiple coding problem solutions (varied complexity) are present and useful for learning/assessment.
 
 #### 4. Design Patterns (`com.systems.demo.apnewsdemo.design.patterns`)
 - Singleton pattern implementation
@@ -177,6 +176,7 @@ Multiple coding problem solutions:
   - Tests update player with sports
   - Tests pagination by sports category
 - `SportServiceTest` - Unit tests for SportsService
+- `LRUCacheTest` - Tests for the node-based key->value LRU cache (put/get/evict/remove)
 
 **Test Dependencies**:
 - JUnit 5
@@ -192,49 +192,41 @@ Multiple coding problem solutions:
 4. ✅ Custom exception handling
 5. ✅ Validation using Jakarta Validation
 6. ✅ Pagination support
-7. ✅ Comprehensive test coverage for services
+7. ✅ Good unit test coverage for service layer
 8. ✅ Multiple database profile support
 9. ✅ Lombok for reducing boilerplate
 
 #### Areas for Improvement
 
-1. **Incomplete LRU Cache Implementation**
-   - `LRUCache.java` has incomplete logic in `upsertData()` method
-   - Missing proper cache eviction logic
+1. Query / Repository issues
+   - `PlayerRepository.getPlayersByAgeAndLevelAndGender()` appears to have incorrect parameter mapping in one query (double-check parameter names and types).
 
-2. **Query Issues**
-   - `PlayerRepository.getPlayersByAgeAndLevelAndGender()` has incorrect parameter mapping (uses `:level` for email)
+2. Service Implementation issues
+   - `PlayerServiceImpl.createPlayer()` should be reviewed to ensure all DTO fields (like email) are being set correctly.
+   - `updatePlayerWithSport()` should save the player after modifying relationships; validate transactional behavior.
 
-3. **Service Implementation Issues**
-   - `PlayerServiceImpl.createPlayer()` doesn't set email from DTO
-   - `updatePlayerWithSport()` doesn't save the player after adding sports
+3. File upload handling
+   - The `POST /api/sports/upload/` endpoint currently logs the upload but lacks robust processing, validation, and storage logic.
 
-4. **Code Quality**
-   - Some methods have inconsistent error handling
-   - Missing null checks in some places
-   - Incomplete file upload handler (just logs, doesn't process)
+4. Documentation
+   - Missing README.md with setup and usage instructions.
+   - No Swagger/OpenAPI documentation—consider adding `springdoc-openapi` for auto-generated API docs.
 
-5. **Documentation**
-   - Missing README.md
-   - Some JavaDoc comments are incomplete
-   - No API documentation (Swagger/OpenAPI)
+5. Security
+   - No authentication/authorization present. Add Spring Security for production readiness.
+   - Input validation/sanitization for file uploads and external inputs should be hardened.
 
-6. **Security**
-   - No authentication/authorization
-   - No input sanitization for file uploads
-   - Hardcoded database credentials in config files
+6. Best Practices & Cleanliness
+   - Replace magic numbers/strings (error codes) with constants or an enum.
+   - Add consistent logging at important error/flow points.
+   - Add JavaDoc to public-facing classes and methods.
 
-7. **Best Practices**
-   - Some magic numbers/strings (error codes like "101", "102")
-   - Could use constants for error codes
-   - Missing logging in some critical paths
-
-8. **QuickSort Implementation**
-   - Iteration counting logic appears incorrect (double counting)
+7. Algorithms & Implementations
+   - QuickSort iteration counting logic should be checked for correctness (observed double-counting in the current implementation).
 
 ### Project Purpose
 
-This appears to be a **demonstration/learning project** that showcases:
+This is a **demonstration/learning project** that showcases:
 - Spring Boot REST API development
 - JPA/Hibernate ORM usage
 - Common algorithms and data structures
@@ -242,38 +234,40 @@ This appears to be a **demonstration/learning project** that showcases:
 - Multi-threading concepts
 - Design patterns
 
-The project name "ap-news-demo" suggests it might have been intended for a news-related application, but the current implementation is focused on sports management.
+The project name "ap-news-demo" suggests a news-related intent, but the current implementation is focused on sports management and algorithm/data-structure demos.
 
 ### Recommendations
 
-1. **Complete the LRU Cache implementation**
-2. **Fix the query parameter mapping issue**
-3. **Add proper file upload handling**
-4. **Implement proper error code constants**
-5. **Add Swagger/OpenAPI documentation**
-6. **Add security (Spring Security)**
-7. **Create a README with setup instructions**
-8. **Add integration tests**
-9. **Fix QuickSort iteration counting**
-10. **Add proper logging throughout**
+1. Keep the recently implemented key->value LRU (done). Add more unit tests around edge cases (nulls, duplicate puts, zero/one capacity).
+2. Fix the query parameter mapping issues in repositories and add integration tests for repository queries.
+3. Improve file upload handling: validate file types/sizes, store files safely, and return meaningful responses.
+4. Add a `README.md` with quickstart and dev notes.
+5. Add Swagger/OpenAPI (springdoc) to document endpoints.
+6. Add Spring Security and basic auth/role examples for endpoints.
+7. Add integration tests (Spring Boot test slicing or full context) for controllers and repositories.
+8. Add logging and move magic strings to constants or enums.
+9. Review and fix QuickSort counting logic.
 
-### Build and Run
+### Build, Run and Test (local)
 
-```bash
+Windows (using included wrapper):
+
+```powershell
 # Build the project
-./mvnw clean install
+./mvnw.cmd clean install
 
-# Run with H2 database (default)
-./mvnw spring-boot:run
+# Run using embedded H2 (default profile)
+./mvnw.cmd spring-boot:run
 
-# Run with MySQL database
-./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql
+# Run only the LRU cache tests
+mvn -Dtest=LRUCacheTest test
 ```
 
-The application runs on port **8080** by default.
+Notes:
+- The project uses Maven wrapper files (`mvnw`, `mvnw.cmd`). If wrapper isn't available on your PATH, use system `mvn` instead.
 
 ---
 
-**Analysis Date**: Generated automatically
+**Analysis Date**: Updated automatically
 **Project Version**: 0.0.1-SNAPSHOT
 

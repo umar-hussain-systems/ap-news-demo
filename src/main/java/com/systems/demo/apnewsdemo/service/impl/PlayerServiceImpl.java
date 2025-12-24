@@ -12,13 +12,14 @@ import com.systems.demo.apnewsdemo.model.Sport;
 import com.systems.demo.apnewsdemo.repository.PlayerRepository;
 import com.systems.demo.apnewsdemo.repository.SportRepository;
 import com.systems.demo.apnewsdemo.service.PlayerService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.MANDATORY)
     public PlayerDto createPlayer(CreatePlayerDto createPlayerDto) {
         Player player = new Player();
 

@@ -7,58 +7,77 @@ import java.util.Objects;
 import lombok.Getter;
 
 @Getter
-public class LRUCache<T> {
+public class LRUCache<K, V> {
 
-    private Queue<T> queue;
+    private final Queue<KeyValue<K, V>> queue;
 
-    private Map<T, QueueNode<T>> valueNodeMap;
+    private final Map<K, QueueNode<KeyValue<K, V>>> keyNodeMap;
 
     private final int cacheSize;
 
     public LRUCache() {
-        super();
-        this.cacheSize = 10;
+        this(10);
     }
 
     public LRUCache(int cacheSize) {
         this.cacheSize = cacheSize <= 0 ? 10 : cacheSize;
+        this.queue = new Queue<>();
+        this.keyNodeMap = new HashMap<>();
     }
 
-    public void addToCache(T val) {
-        if (queue == null || queue.getSize() == 0) {
-            newInsertion(val);
+    /**
+     * Insert or update a key->value pair. Marks item as most recently used.
+     */
+    public void put(K key, V value) {
+        if (key == null) return;
+
+        QueueNode<KeyValue<K, V>> existing = keyNodeMap.get(key);
+        if (Objects.nonNull(existing)) {
+            KeyValue<K, V> kv = existing.getData().getValue();
+            kv.setValue(value);
+            queue.moveToFront(existing);
+            return;
         }
-        if (queue.getSize() >= 1) {
-            upsertData(val);
-        }
-    }
 
-    private void newInsertion(T val) {
-        queue = new Queue<>();
-        this.valueNodeMap = new HashMap<>();
-        queue.insertFirst(val);
-        valueNodeMap.put(val, queue.getRootNode());
-    }
-
-    private void upsertData(T val) {
-        //first check root and last then check the map
-        QueueNode<T> queueNode = valueNodeMap.get(val);
-        if (Objects.nonNull(queueNode)) {
-            queueNode.getData().updateTime();
-            //queue.
-        } else  {
-            if(queue.getSize() <= cacheSize) {
-                newInsertion(val);
-            } else {
-                queue.removeLast();
-                newInsertion(val);
+        // Evict if needed
+        if (queue.getSize() >= cacheSize) {
+            KeyValue<K, V> removed = queue.removeLast();
+            if (removed != null) {
+                keyNodeMap.remove(removed.getKey());
             }
-
         }
+
+        // Insert new key->value
+        queue.insertFirst(new KeyValue<>(key, value));
+        keyNodeMap.put(key, queue.getRootNode());
+    }
+
+    /**
+     * Get value by key and mark as most recently used; return null if absent.
+     */
+    public V get(K key) {
+        if (key == null) return null;
+        QueueNode<KeyValue<K, V>> node = keyNodeMap.get(key);
+        if (node == null) return null;
+        KeyValue<K, V> kv = node.getData().getValue();
+        queue.moveToFront(node);
+        return kv.getValue();
+    }
+
+    public boolean contains(K key) {
+        return key != null && keyNodeMap.containsKey(key);
+    }
+
+    public void remove(K key) {
+        if (key == null) return;
+        QueueNode<KeyValue<K, V>> node = keyNodeMap.remove(key);
+        if (node != null) {
+            queue.removeNode(node);
+        }
+    }
+
+    public int size() {
+        return queue.getSize();
     }
 
 }
-
-
-
-
