@@ -27,7 +27,7 @@ Traditional **imperative programming** focuses on *how* to do something — you 
 
 ```
 ┌─────────┐    ┌─────────────────────┐    ┌──────────────┐
-│ SOURCE  │ → │ INTERMEDIATE OPS    │ → │ TERMINAL OP  │
+│ SOURCE  │ →  │ INTERMEDIATE OPS    │ →  │ TERMINAL OP  │
 │         │    │ (lazy, chainable)   │    │ (triggers    │
 │ List,   │    │ map, filter, sorted │    │  execution)  │
 │ Set,    │    │ flatMap, distinct   │    │ collect,     │

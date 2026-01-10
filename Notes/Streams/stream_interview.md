@@ -12,7 +12,7 @@ This document is designed for **quick interview prep** and **daily coding refere
 ┌─────────────────────────────────────────────────────────────────┐
 │                     STREAM PIPELINE                             │
 ├─────────────────────────────────────────────────────────────────┤
-│  SOURCE          →    INTERMEDIATE    →    TERMINAL            │
+│  SOURCE          →    INTERMEDIATE    →    TERMINAL             │
 │  (Collection,         (Lazy, chainable)     (Triggers           │
 │   Array, Generator)    filter, map, sorted   execution)         │
 │                                              collect, reduce    │
