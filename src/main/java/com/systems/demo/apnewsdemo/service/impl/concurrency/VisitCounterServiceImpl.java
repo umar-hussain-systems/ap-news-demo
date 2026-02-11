@@ -51,7 +51,7 @@ public class VisitCounterServiceImpl implements VisitCounterService {
 
     for (int i = 0; i < requests; i++) {
       futures.add(visitExecutor.submit(() -> recordVisit(userId)));
-    }
+    }visitExecutor.execute();
 
     // Wait for all tasks and surface failures
     for (Future<Integer> f : futures) {

@@ -22,8 +22,6 @@ public class StreamCollectorExamples {
   public static void groupByExample() {
 
 
-
-
     record Employee(String name, int age, double salary, String dept) {}
 
     List<Employee> employees = List.of(
