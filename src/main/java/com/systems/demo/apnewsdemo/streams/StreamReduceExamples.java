@@ -67,6 +67,7 @@ public class StreamReduceExamples {
   }
 
   public static void main(String[] args) {
+    List<String> names = List.of("Ali", "Ahmed", "Umar", "Ahsan", "Bilal");
 
   }
 

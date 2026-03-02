@@ -2,6 +2,7 @@ package com.systems.demo.apnewsdemo.service.impl.concurrency;
 
 import com.systems.demo.apnewsdemo.dto.request.PaymentRequest;
 import com.systems.demo.apnewsdemo.service.PaymentService;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class PaymentServiceImpl implements PaymentService {
   @Override
   public void processPayment(PaymentRequest request) {
     paymentExecutor.submit(() -> heavyProcessing(request));
+    CompletableFuture completableFuture = CompletableFuture.runAsync(() -> heavyProcessing(request),paymentExecutor);
   }
 
   private void heavyProcessing(PaymentRequest request) {
